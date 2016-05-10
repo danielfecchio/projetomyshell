@@ -1,7 +1,7 @@
 %{
-#define YYSTYPE double
+#include <stdio.h>
+#define YY_DECL int yylex()
 #include "projeto_fecchio.tab.h"
-#include <stdlib.h>
 %}
 
 white [ \t]+
@@ -13,9 +13,10 @@ real {inteiro}("."{inteiro})?{expoente}?
 %%
 
 {white} { }
-{real} { yylval=atof(yytext); 
+{real} { yylval.pfloat =atof(yytext); 
  return NUMERO;
 }
+
 
 "+" return ADICAO;
 "-" return SUBTRACAO;
@@ -23,9 +24,24 @@ real {inteiro}("."{inteiro})?{expoente}?
 "/" return DIVISAO;
 "(" return ESQUERDA;
 ")" return DIREITA;
-"\n" return END;
 "ls" return LS;
 "ps" return PS;
 "quit" return QUIT;
 "calculo" return CALCULO;
 "kill" return KILL;
+"mkdir" return MKDIR;
+"rmdir" return RMDIR;
+"cd" return CD;
+"touch" return TOUCH;
+"ifconfig" return IFCONFIG;
+"start" return START;
+
+[a-zA-Z0-9./\()_]+[.]?[a-zA-Z0-9]*   {
+	yylval.sval = strdup(yytext);
+	return STRING;
+}
+
+"\n" return END;
+. return ERROR;
+
+%%
